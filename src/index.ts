@@ -39,8 +39,10 @@ interface RobotOutput extends RobotState {
   path: CommandType[];
 }
 
-export function runWith(_input: any) {
-  return { status: 'error' };
+export function runWith(_input: RobotInput): RobotOutput {
+  const { arena, location, heading, directions } = _input;
+
+  return { status: 'ok', location, heading, path: directions };
 }
 
 // get the input from stdin and parse
