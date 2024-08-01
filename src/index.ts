@@ -42,7 +42,19 @@ interface RobotOutput extends RobotState {
 export function runWith(_input: RobotInput): RobotOutput {
   const { arena, location, heading, directions } = _input;
 
-  return { status: 'ok', location, heading, path: directions };
+  let currentState = { location, heading }; // initialise to starting coordinates
+
+  for (const command of directions) {
+    if (!isValidCommand(command)) {
+      return { status: 'error', ...currentState, path: [] };
+    }
+  }
+
+  return { status: 'ok', ...currentState, path: [] };
+}
+
+function isValidCommand(command: any) {
+  return Object.values(Command).includes(command);
 }
 
 // get the input from stdin and parse
