@@ -43,18 +43,21 @@ export function runWith(_input: RobotInput): RobotOutput {
   const { arena, location, heading, directions } = _input;
 
   let currentState = { location, heading }; // initialise to starting coordinates
+  const path: CommandType[] = [];
 
   for (const command of directions) {
+    path.push(command);
+
     if (!isValidCommand(command)) {
-      return { status: 'error', ...currentState, path: [] };
+      return { status: 'error', ...currentState, path };
     }
 
     if (!isWithinArena(currentState, arena)) {
-      return { status: 'crash', ...currentState, path: [] };
+      return { status: 'crash', ...currentState, path };
     }
   }
 
-  return { status: 'ok', ...currentState, path: [] };
+  return { status: 'ok', ...currentState, path };
 }
 
 function isValidCommand(command: any) {
