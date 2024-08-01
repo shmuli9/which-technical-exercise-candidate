@@ -52,9 +52,9 @@ export function runWith(_input: RobotInput): RobotOutput {
       return { status: 'error', ...currentState, path };
     }
 
-    currentState = runCommand(command, currentState); // update the state
-
-    if (!isWithinArena(currentState, arena)) {
+    try {
+      currentState = runCommand(command, currentState, arena); // update the state
+    } catch (e) {
       return { status: 'crash', ...currentState, path };
     }
   }
@@ -62,7 +62,7 @@ export function runWith(_input: RobotInput): RobotOutput {
   return { status: 'ok', ...currentState, path };
 }
 
-function runCommand(command: CommandType, currentState: RobotState): RobotState {
+function runCommand(command: CommandType, currentState: RobotState, arena: RobotInput['arena']): RobotState {
   const { location, heading } = currentState;
 
   let nextState;
@@ -116,6 +116,10 @@ function runCommand(command: CommandType, currentState: RobotState): RobotState 
           break;
       }
       break;
+  }
+
+  if (!isWithinArena(nextState!, arena)) {
+    throw new Error('Coordinate out of arena');
   }
 
   return nextState as RobotState;

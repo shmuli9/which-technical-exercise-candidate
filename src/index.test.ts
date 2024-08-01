@@ -9,7 +9,7 @@ function exampleTest(name: string) {
     const input = loadJson('input.json');
     const expected = loadJson('expected.json');
 
-    expect(runWith(input)).toBe(expected);
+    expect(runWith(input)).toStrictEqual(expected);
   });
 }
 
