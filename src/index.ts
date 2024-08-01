@@ -52,6 +52,8 @@ export function runWith(_input: RobotInput): RobotOutput {
       return { status: 'error', ...currentState, path };
     }
 
+    currentState = runCommand(command, currentState); // update the state
+
     if (!isWithinArena(currentState, arena)) {
       return { status: 'crash', ...currentState, path };
     }
@@ -60,8 +62,67 @@ export function runWith(_input: RobotInput): RobotOutput {
   return { status: 'ok', ...currentState, path };
 }
 
-function isValidCommand(command: any) {
-  return Object.values(Command).includes(command);
+function runCommand(command: CommandType, currentState: RobotState): RobotState {
+  const { location, heading } = currentState;
+
+  let nextState;
+
+  switch (command) {
+    case Command.forward:
+      switch (heading) {
+        case Heading.north:
+          nextState = { ...currentState, location: { x: location.x, y: location.y + 1 } };
+          break;
+        case Heading.south:
+          nextState = { ...currentState, location: { x: location.x, y: location.y - 1 } };
+          break;
+        case Heading.east:
+          nextState = { ...currentState, location: { x: location.x + 1, y: location.y } };
+          break;
+        case Heading.west:
+          nextState = { ...currentState, location: { x: location.x - 1, y: location.y } };
+          break;
+      }
+      break;
+    case Command.left:
+      switch (heading) {
+        case Heading.north:
+          nextState = { ...currentState, heading: Heading.west };
+          break;
+        case Heading.south:
+          nextState = { ...currentState, heading: Heading.east };
+          break;
+        case Heading.east:
+          nextState = { ...currentState, heading: Heading.north };
+          break;
+        case Heading.west:
+          nextState = { ...currentState, heading: Heading.south };
+          break;
+      }
+      break;
+    case Command.right:
+      switch (heading) {
+        case Heading.north:
+          nextState = { ...currentState, heading: Heading.east };
+          break;
+        case Heading.south:
+          nextState = { ...currentState, heading: Heading.west };
+          break;
+        case Heading.east:
+          nextState = { ...currentState, heading: Heading.south };
+          break;
+        case Heading.west:
+          nextState = { ...currentState, heading: Heading.north };
+          break;
+      }
+      break;
+  }
+
+  return nextState as RobotState;
+}
+
+function isValidCommand(command: string) {
+  return Object.values(Command).includes(command as Command);
 }
 
 function isWithinArena({ location }: RobotState, { corner1, corner2 }: RobotInput['arena']): boolean {
