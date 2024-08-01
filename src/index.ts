@@ -48,6 +48,10 @@ export function runWith(_input: RobotInput): RobotOutput {
     if (!isValidCommand(command)) {
       return { status: 'error', ...currentState, path: [] };
     }
+
+    if (!isWithinArena(currentState, arena)) {
+      return { status: 'crash', ...currentState, path: [] };
+    }
   }
 
   return { status: 'ok', ...currentState, path: [] };
@@ -55,6 +59,13 @@ export function runWith(_input: RobotInput): RobotOutput {
 
 function isValidCommand(command: any) {
   return Object.values(Command).includes(command);
+}
+
+function isWithinArena({ location }: RobotState, { corner1, corner2 }: RobotInput['arena']): boolean {
+  const { x: minX, y: minY } = corner1;
+  const { x: maxX, y: maxY } = corner2;
+
+  return location.x >= minX && location.x <= maxX && location.y >= minY && location.y <= maxY;
 }
 
 // get the input from stdin and parse
