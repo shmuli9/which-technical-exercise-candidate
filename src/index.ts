@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { readFileSync } from 'fs';
 
 enum Heading {
   north = 'north',
@@ -132,9 +132,11 @@ function isWithinArena({ location }: RobotState, { corner1, corner2 }: RobotInpu
   return location.x >= minX && location.x <= maxX && location.y >= minY && location.y <= maxY;
 }
 
-// get the input from stdin and parse
-const stdin = fs.readFileSync(0, 'utf8');
-const parsedInput = JSON.parse(stdin);
-const output = runWith(parsedInput);
+if (require.main === module) {
+  // get the input from stdin and parse
+  const stdin = readFileSync(0, 'utf8');
+  const parsedInput = JSON.parse(stdin);
+  const output = runWith(parsedInput);
 
-process.stdout.write(JSON.stringify(output) + '\n');
+  process.stdout.write(JSON.stringify(output) + '\n');
+}
