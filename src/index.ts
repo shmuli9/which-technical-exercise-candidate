@@ -118,7 +118,7 @@ function runCommand(command: CommandType, currentState: RobotState, arena: Robot
       break;
   }
 
-  if (!isWithinArena(nextState!, arena)) {
+  if (!isWithinArena(nextState as RobotState, arena)) {
     throw new Error('Coordinate out of arena');
   }
 
