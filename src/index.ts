@@ -30,14 +30,26 @@ interface RobotState {
   heading: HeadingType;
 }
 
+type CommandWithReps = `${CommandType}(${number})` | CommandType;
+
 interface RobotInput extends RobotState {
   arena: { corner1: Coordinate; corner2: Coordinate };
-  directions: string[];
+  directions: CommandWithReps[];
 }
 
 interface RobotOutput extends RobotState {
   status: StatusType;
   path: CommandType[];
+}
+
+function isCommandWithReps(command: string): command is `${CommandType}(${number})` {
+  const regex = new RegExp(`^(${Object.values(Command).join('|')})\\(\\d+\\)$`);
+  return regex.test(command);
+}
+
+function parseCommandWithReps(command: `${CommandType}(${number})`): { command: CommandType; reps: number } {
+  const [cmd, reps] = command.split('(');
+  return { command: cmd as CommandType, reps: Number(reps.split(')')[0]) };
 }
 
 export function runWith(_input: RobotInput): RobotOutput {
@@ -48,16 +60,14 @@ export function runWith(_input: RobotInput): RobotOutput {
 
   const directions2: CommandType[] = [];
 
-  // forward(3)
   directions.forEach((command) => {
-    if (command.includes('(')) {
-      const [cmd, reps] = command.split('(');
-      const numberOfTime = Number(reps.split(')')[0]);
-      for (let i = 0; i < numberOfTime; i++) {
-        directions2.push(cmd as CommandType);
+    if (isCommandWithReps(command)) {
+      const { command: cmd, reps } = parseCommandWithReps(command);
+      for (let i = 0; i < reps; i++) {
+        directions2.push(cmd);
       }
     } else {
-      directions2.push(command as CommandType);
+      directions2.push(command);
     }
   });
 
@@ -114,6 +124,8 @@ function runCommand(command: CommandType, currentState: RobotState, arena: Robot
         case Heading.west:
           nextState = { ...currentState, location: { x: location.x + 1, y: location.y } };
           break;
+        default:
+          throw new Error('Invalid heading');
       }
       break;
     case Command.left:
