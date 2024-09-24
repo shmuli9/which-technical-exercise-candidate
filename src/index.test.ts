@@ -18,4 +18,5 @@ describe('Candidate robot', () => {
   exampleTest('02-error');
   exampleTest('03-crash');
   exampleTest('04-backward');
+  exampleTest('05-repeat');
 });

@@ -32,7 +32,7 @@ interface RobotState {
 
 interface RobotInput extends RobotState {
   arena: { corner1: Coordinate; corner2: Coordinate };
-  directions: CommandType[];
+  directions: string[];
 }
 
 interface RobotOutput extends RobotState {
@@ -46,15 +46,30 @@ export function runWith(_input: RobotInput): RobotOutput {
   let currentState = { location, heading }; // initialise to starting coordinates
   const path: CommandType[] = [];
 
-  for (const command of directions) {
-    path.push(command);
+  const directions2: CommandType[] = [];
+
+  // forward(3)
+  directions.forEach((command) => {
+    if (command.includes('(')) {
+      const [cmd, reps] = command.split('(');
+      const numberOfTime = Number(reps.split(')')[0]);
+      for (let i = 0; i < numberOfTime; i++) {
+        directions2.push(cmd as CommandType);
+      }
+    } else {
+      directions2.push(command as CommandType);
+    }
+  });
+
+  for (const command of directions2) {
+    path.push(command as CommandType);
 
     if (!isValidCommand(command)) {
       return { status: 'error', ...currentState, path };
     }
 
     try {
-      currentState = runCommand(command, currentState, arena); // update the state
+      currentState = runCommand(command as CommandType, currentState, arena); // update the state
     } catch (e) {
       return { status: 'crash', ...currentState, path };
     }
