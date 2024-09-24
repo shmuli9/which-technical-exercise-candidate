@@ -62,14 +62,14 @@ export function runWith(_input: RobotInput): RobotOutput {
   });
 
   for (const command of directions2) {
-    path.push(command as CommandType);
+    path.push(command);
 
     if (!isValidCommand(command)) {
       return { status: 'error', ...currentState, path };
     }
 
     try {
-      currentState = runCommand(command as CommandType, currentState, arena); // update the state
+      currentState = runCommand(command, currentState, arena); // update the state
     } catch (e) {
       return { status: 'crash', ...currentState, path };
     }
