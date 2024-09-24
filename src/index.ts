@@ -12,6 +12,7 @@ enum Command {
   forward = 'forward',
   left = 'left',
   right = 'right',
+  backward = 'backward',
 }
 type CommandType = keyof typeof Command;
 
@@ -81,6 +82,22 @@ function runCommand(command: CommandType, currentState: RobotState, arena: Robot
           break;
         case Heading.west:
           nextState = { ...currentState, location: { x: location.x - 1, y: location.y } };
+          break;
+      }
+      break;
+    case Command.backward:
+      switch (heading) {
+        case Heading.north:
+          nextState = { ...currentState, location: { x: location.x, y: location.y - 1 } };
+          break;
+        case Heading.south:
+          nextState = { ...currentState, location: { x: location.x, y: location.y + 1 } };
+          break;
+        case Heading.east:
+          nextState = { ...currentState, location: { x: location.x - 1, y: location.y } };
+          break;
+        case Heading.west:
+          nextState = { ...currentState, location: { x: location.x + 1, y: location.y } };
           break;
       }
       break;

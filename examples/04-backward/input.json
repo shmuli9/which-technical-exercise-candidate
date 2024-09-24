@@ -1,0 +1,11 @@
+{
+  "arena": {
+    "corner1": { "x": -3, "y": -3 },
+    "corner2": { "x": 3, "y": 3 }
+  },
+
+  "location": { "x": 0, "y": 0 },
+  "heading": "north",
+
+  "directions": ["backward"]
+}
