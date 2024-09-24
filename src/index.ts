@@ -1,21 +1,5 @@
 import { readFileSync } from 'fs';
 
-enum Heading {
-  north = 'north',
-  east = 'east',
-  south = 'south',
-  west = 'west',
-}
-type HeadingType = keyof typeof Heading;
-
-enum Command {
-  forward = 'forward',
-  left = 'left',
-  right = 'right',
-  backward = 'backward',
-}
-type CommandType = keyof typeof Command;
-
 enum Status {
   ok = 'ok',
   error = 'error',
@@ -30,6 +14,22 @@ interface RobotState {
   heading: HeadingType;
 }
 
+enum Command {
+  forward = 'forward',
+  left = 'left',
+  right = 'right',
+  backward = 'backward',
+}
+type CommandType = keyof typeof Command;
+
+enum Heading {
+  north = 'north',
+  east = 'east',
+  south = 'south',
+  west = 'west',
+}
+type HeadingType = keyof typeof Heading;
+
 type CommandWithReps = `${CommandType}(${number})` | CommandType;
 
 interface RobotInput extends RobotState {
@@ -43,8 +43,13 @@ interface RobotOutput extends RobotState {
 }
 
 function isCommandWithReps(command: string): command is `${CommandType}(${number})` {
-  const regex = new RegExp(`^(${Object.values(Command).join('|')})\\(\\d+\\)$`);
-  return regex.test(command);
+  const parts = command.split('(');
+  if (parts.length !== 2 || !parts[1].endsWith(')')) {
+    return false;
+  }
+  const cmd = parts[0] as Command;
+  const reps = parts[1].slice(0, -1);
+  return Object.values(Command).includes(cmd) && !isNaN(Number(reps));
 }
 
 function parseCommandWithReps(command: `${CommandType}(${number})`): { command: CommandType; reps: number } {
